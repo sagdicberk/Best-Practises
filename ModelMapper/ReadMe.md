@@ -58,4 +58,33 @@ public class ModelMapperManager implements  ModelMapperService{
 
 }
 ```
+## Örnek Kullanım 
+### Mapper Kullanmadan önce
+```java
+    @Override
+    public void updateCompany(long id ,Company company) {
+        Company existingCompany = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found with id " + company.getId()));
+        existingCompany.setEmail(company.getEmail());
+        existingCompany.setAddress(company.getAddress());
+        existingCompany.setPhone(company.getPhone());
+        existingCompany.setIndustry(company.getIndustry());
+        existingCompany.setName(company.getName());
+        companyRepository.save(existingCompany);
+    }
+```
+### Mapper ile aynı işlemin gerçekleşmesi
+```java
+    @Override
+    public void updateCompany(long id ,Company company) {
+        Company existingCompany = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found with id " + company.getId()));
+        
+        // Burada aynı isimdeki fieldları eşleyerek dönüşüm gerçekleşir. 
+        modelMapperService.forRequest().map(company, existingCompany);
+        
+        companyRepository.save(existingCompany);
+    }
+```
+
 
